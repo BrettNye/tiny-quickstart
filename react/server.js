@@ -3,16 +3,18 @@ server.js – Configures the Plaid client and uses Express to defines routes tha
 */
 
 require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
+const db = require("./database/database.js");
 const app = express();
 
 app.use(
   // FOR DEMO PURPOSES ONLY
   // Use an actual secret key in production
-  session({ secret: "bosco", saveUninitialized: true, resave: true })
+  session({ secret: "Nye123$$..FiNaNcIaLs", saveUninitialized: true, resave: true })
 );
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -55,6 +57,7 @@ app.post("/api/exchange_public_token", async (req, res, next) => {
   // FOR DEMO PURPOSES ONLY
   // Store access_token in DB instead of session storage
   req.session.access_token = exchangeResponse.data.access_token;
+  console.log(exchangeResponse);
   res.json(true);
 });
 

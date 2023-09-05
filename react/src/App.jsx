@@ -47,6 +47,7 @@ function App(props) {
   const config = {
     token,
     onSuccess,
+    
   };
 
   // For OAuth, configure the received redirect URI
