@@ -18,6 +18,19 @@
         const handler = Plaid.create({
           token: await createLinkToken(),
           onSuccess: async (publicToken, metadata) => {
+            console.log(metadata)
+            // Grab Metadata
+            /* 
+              {
+                type,
+                user_id,
+                link_session_id,
+                request_id,
+                error_type,
+                error_code,
+                status
+              }
+            */
             await fetch("/api/exchange_public_token", {
               method: "POST",
               body: JSON.stringify({ public_token: publicToken }),

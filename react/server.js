@@ -4,11 +4,13 @@ server.js – Configures the Plaid client and uses Express to defines routes tha
 
 require("dotenv").config();
 
+const mongoose = require('mongoose');
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
-const db = require("./database/database.js");
+const { Schema, model} = require('mongoose');
 const app = express();
 
 app.use(
@@ -31,6 +33,13 @@ const config = new Configuration({
     },
   },
 });
+
+var accessTokenSchema = new Schema({
+  itemId: String,
+  token: String
+})
+
+var accessToken = model('Access Tokens', accessTokenSchema)
 
 //Instantiate the Plaid client with the configuration
 const client = new PlaidApi(config);
@@ -57,7 +66,11 @@ app.post("/api/exchange_public_token", async (req, res, next) => {
   // FOR DEMO PURPOSES ONLY
   // Store access_token in DB instead of session storage
   req.session.access_token = exchangeResponse.data.access_token;
-  console.log(exchangeResponse);
+  // token = {
+  //   itemId: exchangeResponse.data.item_id,
+  //   token: exchangeResponse.data.access_token
+  // }
+  // accessToken.create(token)
   res.json(true);
 });
 
@@ -70,4 +83,8 @@ app.get("/api/balance", async (req, res, next) => {
   });
 });
 
-app.listen(process.env.PORT || 8080);
+app.listen(8080, () =>{
+  mongoose.connect(process.env.MONGODB_URI).then(() => {
+    console.log('Database Connected')
+  })
+})
