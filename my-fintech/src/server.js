@@ -2,20 +2,30 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-// const db = require('../config/database');
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('../db.sqlite');
+const path = require('path');
+const db = require('../config/database');
+
 
 const app = express();
+app.use(bodyParser.json());
 
-const test = db.get('SELECT * FROM users', () => {
-    
-})
+// db.get('SELECT * FROM users', (err, rows) => {
+//     if(err){
+//         console.log(err)
+//         return;
+//     }
 
+//     console.log(rows);    
+// })
+
+// db.close();
+
+const AuthRoutes = require('./routes/auth');
 const PlaidRoutes = require('./routes/plaid');
 const UserRoutes = require('./routes/user');
 
-app.use(PlaidRoutes);
+app.use('/api/oauth', AuthRoutes);
+app.use('/api/plaid', PlaidRoutes);
 // app.use(UserRoutes);
 
 app.listen(3000);

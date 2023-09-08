@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "My-Fintech",
+            "database": "${workspaceFolder:my-fintech}/my-fintech/db.sqlite"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
