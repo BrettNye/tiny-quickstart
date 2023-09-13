@@ -1,72 +1,59 @@
+let linkTokenData;
 
-    const createLinkToken = async () => {
-        const res = await fetch("/api/plaid/create_link_token");
-          const data = await res.json();
-          const linkToken = data.link_token;
-          localStorage.setItem("link_token", linkToken);
-          return linkToken;
-    }
+const initializeLink = async function () {
+  const linkTokenResponse = await fetch(`/api/plaid/create_link_token`);
+  linkTokenData = await linkTokenResponse.json();
+  document.querySelector("#link-account").classList.remove("opacity-50");
+  console.log(JSON.stringify(linkTokenData));
+};
 
-    const handler = Plaid.create({
-        token: await createLinkToken(),
-          onSuccess: async (publicToken, metadata) => {
-            console.log(metadata)
-            // Grab Metadata
-            /* 
-              {
-                type,
-                user_id,
-                link_session_id,
-                request_id,
-                error_type,
-                error_code,
-                status
-              }
-            */
-            await fetch("/api/plaid/exchange_public_token", {
-              method: "POST",
-              body: JSON.stringify({ public_token: publicToken }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-            await getBalance();
-          },
-          onEvent: (eventName, metadata) => {
-            console.log("Event:", eventName);
-            console.log("Metadata:", metadata);
-          },
-          onExit: (error, metadata) => {
-            console.log(error, metadata);
-          },
-        });
+const startLink = function () {
+  if (linkTokenData === undefined) {
+    return;
+  }
+  const handler = Plaid.create({
+    token: linkTokenData.link_token,
+    onSuccess: async (publicToken, metadata) => {
+      console.log(
+        `I have a public token: ${publicToken} I should exchange this`
+      );
+      await exchangeToken(publicToken, metadata);
+    },
+    onExit: (err, metadata) => {
+      console.log(
+        `I'm all done. Error: ${JSON.stringify(err)} Metadata: ${JSON.stringify(
+          metadata
+        )}`
+      );
+    },
+    onEvent: (eventName, metadata) => {
+      console.log(`Event ${eventName}`);
+    },
+  });
+  handler.open();
+};
 
-        // Start Link when button is clicked
-        const linkAccountButton = document.getElementById("link-account");
-        linkAccountButton.addEventListener("click", (event) => {
-          handler.open();
-        });
+async function exchangeToken(publicToken, metadata) {
+  const tokenExchangeResponse = await fetch(`/api/plaid/exchange_public_token`, {
+    method: "POST",
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify({ public_token: publicToken, metadata: metadata }),
+  });
+  // This is where I'd add our error checking... if our server returned any
+  // errors.
+  const tokenExchangeData = await tokenExchangeResponse.json();
+  console.log("Done exchanging our token");
+  // window.location.href = "/dashboard";
+}
 
-         // Retrieves balance information
-      const getBalance = async function () {
-        const response = await fetch("/api/data", {
-          method: "GET",
-        });
-        const data = await response.json();
+document.querySelector("#link-account").addEventListener("click", startLink);
+document.querySelector("#balance").addEventListener('click', function(){
+  fetch(`/api/plaid/balance`)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      // document.querySelector("#balance-data").innerHTML = JSON.stringify(data.Balance, null, 2)
+    })
+})
 
-        //Render response data
-        const pre = document.getElementById("response");
-        pre.textContent = JSON.stringify(data, null, 2);
-        pre.style.background = "#F6F6F6";
-      };
-
-      // Check whether account is connected
-      const getStatus = async function () {
-        const account = await fetch("/api/is_account_connected");
-        const connected = await account.json();
-        if (connected.status == true) {
-          getBalance();
-        }
-      };
-
-      getStatus();
+initializeLink();

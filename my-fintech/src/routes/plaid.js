@@ -51,12 +51,14 @@ router.get("/create_link_token", async (req, res, next) => {
 
 //Exchange Link Token
 router.post("/exchange_public_token", async (req, res, next) => {
+  console.log(req.body.metadata)
   const exchangeResponse = await client.itemPublicTokenExchange({
     public_token: req.body.public_token,
   });
 
   // FOR DEMO PURPOSES ONLY
   // Store access_token in DB instead of session storage
+  req.session.other_info = req.body.metadata
   req.session.access_token = exchangeResponse.data.access_token;
   res.json(true);
 });
