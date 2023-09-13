@@ -1,5 +1,9 @@
+require("dotenv").config();
 const express = require('express');
 const router = express.Router();
+const session = require("express-session");
+
+router.use(session({secret: process.env.SUPER_SECRET_HASH_KEY, saveUninitialized:true, resave:true}))
 
 const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 const plaidConfig = {
@@ -25,6 +29,7 @@ router.get("/create_link_token", async (req, res, next) => {
       country_codes: ["US"],
       redirect_uri: process.env.PLAID_SANDBOX_REDIRECT_URI,
     });
+
     res.json(tokenResponse.data);
   });
 

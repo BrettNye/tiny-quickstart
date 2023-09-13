@@ -11,10 +11,12 @@ const sqlLastId = 'SELECT last_insert_rowid() as id'
 const authController = {
     login: async (req, res, next) => {
         const sql = `SELECT * FROM users WHERE username = ?`;
-        
         db.get(sql, [req.body.username], (err, rows) => {
             if(err) res.sendStatus(404);
-            if(bcrypt.compare(req.body.password, rows.password)){
+            else if(rows == undefined || rows == null) {
+                res.sendStatus(404);
+            }
+            else if(bcrypt.compare(req.body.password, rows.password)){
                 const token = jwt.sign(
                     {user_id:rows.id, username:rows.username},
                     process.env.SUPER_SECRET_HASH_KEY,

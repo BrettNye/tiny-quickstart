@@ -1,0 +1,18 @@
+.sidenav{
+    background-color: #0BA82E;
+    width: 5rem; 
+}
+
+.content{
+    width: calc(100% - 5rem);
+}
+
+.dashboard-header{
+    font-size: 12px;
+}
+
+.grid-stack-item-content{
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2) !important;
+}

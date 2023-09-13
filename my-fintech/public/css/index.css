@@ -1,0 +1,20 @@
+.custom-card{
+    border: none !important;
+    border-radius: 10px;
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2) !important;
+    height: 26%;
+}
+
+.login-button{
+    background-color: #0BA82E;
+    font-weight: bold;
+    color:white !important;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.login-button:hover{
+    /* background-color: red; */
+    background-color: #119D30;
+}
