@@ -42,6 +42,21 @@ router.get("/create_link_token", async (req, res, next) => {
     });
   }); 
 
+  router.get('/transactions', async (req, res, next) => {
+    const access_token = req.session.access_token;
+    const transactions = await client.transactionsSync({
+      access_token: access_token, 
+      start_date: '2023-01-01',
+      end_date: '2023-09-04',
+      options: {
+        include_personal_finance_category: true
+      }
+    });
+    res.json({
+      Transactions: transactions.data,
+    });
+  });
+
   // Checks whether the user's account is connected, called
   // in index.html when redirected from oauth.html
   router.get("/api/is_account_connected", async (req, res, next) => {

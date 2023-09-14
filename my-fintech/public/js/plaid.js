@@ -48,7 +48,7 @@ async function exchangeToken(publicToken, metadata) {
 
 document.querySelector("#link-account").addEventListener("click", startLink);
 document.querySelector("#balance").addEventListener('click', function(){
-  fetch(`/api/plaid/balance`)
+  fetch(`/api/plaid/transactions`)
     .then(response => response.json())
     .then(data => {
       console.log(data)
